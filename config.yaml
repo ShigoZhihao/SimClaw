@@ -1,0 +1,96 @@
+# =============================================
+# SimClaw 設定ファイル
+# =============================================
+
+# --- ローカルLLM（localhost限定） ---
+llm:
+  base_url: "http://localhost:11434/v1"   # Ollama
+  model: "qwen3.5:14b"
+  temperature: 0.2
+  max_tokens: 4096
+  context_window: 32000
+
+# --- Embedding ---
+embedding:
+  model_name: "intfloat/multilingual-e5-small"
+  device: "cpu"
+
+# --- RAG ---
+rag:
+  docs_dir: "./docs"
+  collection_name: "starccm_docs"
+  db_dir: "./data/chromadb"
+  chunk_size: 512
+  chunk_overlap: 64
+  top_k: 5
+
+# --- ワークスペース ---
+workspace:
+  dir: "./workspace"
+
+# --- スキル ---
+skills:
+  dirs: ["./skills"]
+
+# --- ファイルパス ---
+paths:
+  workspaces_dir: "./workspaces"
+  macros_dir: "./macros"
+  logs_dir: "./logs"
+
+# --- STAR-CCM+ ---
+starccm:
+  executable: "/opt/Siemens/18.02.008/STAR-CCM+18.02.008/star/bin/starccm+"
+  default_args: ["-batch", "-np", "4"]
+  allowed_extensions: [".java", ".py"]
+  timeout_seconds: 3600
+
+# --- メモリ ---
+memory:
+  daily_log_dir: "./workspace/memory"
+  max_conversation_messages: 40
+  auto_save_interval: 5
+  hybrid_search:
+    vector_weight: 0.6
+    bm25_weight: 0.4
+
+# --- コンテキスト管理 ---
+context:
+  max_tokens: 24000
+  compress_threshold: 20000
+  system_reserve: 4000
+
+# --- Heartbeat ---
+heartbeat:
+  enabled: false
+  interval_minutes: 30
+
+# --- セキュリティ ---
+safety:
+  allowed_read_dirs:
+    - "./workspaces"
+    - "./macros"
+    - "./docs"
+    - "./logs"
+    - "./workspace"
+    - "./skills"
+  allowed_write_dirs:
+    - "./macros"
+    - "./workspaces"
+    - "./workspace"
+    - "./logs"
+  shell:
+    mode: "allowlist"
+    allowlist: ["ls *", "cat *", "head *", "tail *", "find * -name *", "wc *", "grep *", "diff *"]
+  browser:
+    enabled: true
+    headless: true
+    allowed_domains:
+      - "docs.sw.siemens.com"
+      - "community.sw.siemens.com"
+      - "stackoverflow.com"
+      - "github.com"
+  max_consecutive_errors: 5
+  require_human_approval:
+    - "star_execute"
+    - "shell_execute"
